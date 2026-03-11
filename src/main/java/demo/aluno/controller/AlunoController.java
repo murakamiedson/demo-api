@@ -1,4 +1,4 @@
-package deso.teste.controller;
+package demo.aluno.controller;
 
 import java.util.Optional;
 
@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import deso.teste.dto.AlunoDTO;
-import deso.teste.model.Aluno;
-import deso.teste.model.repository.AlunoRepository;
+import demo.aluno.dto.AlunoDTO;
+import demo.aluno.model.Aluno;
+import demo.aluno.model.repository.AlunoRepository;
 
 @RequestMapping(path = "/teste-api") // This means URL's start with /teste-api
 @RestController

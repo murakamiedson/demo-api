@@ -1,6 +1,6 @@
-package deso.teste.dto;
+package demo.aluno.dto;
 
-import deso.teste.model.Aluno;
+import demo.aluno.model.Aluno;
 
 public record AlunoDTO(Integer id, String nome, String email) {
 

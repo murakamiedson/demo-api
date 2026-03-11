@@ -1,4 +1,4 @@
-package deso.teste.model;
+package demo.aluno.model;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
