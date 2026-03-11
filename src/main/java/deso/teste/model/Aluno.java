@@ -18,8 +18,7 @@ public class Aluno {
 	private String nome;
 	private String email;
 	
-	public Aluno(Integer id, String nome, String email) {
-		this.id = id;
+	public Aluno(String nome, String email) {
 		this.nome = nome;
 		this.email = email;
 	}

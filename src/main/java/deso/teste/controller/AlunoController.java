@@ -3,6 +3,9 @@ package deso.teste.controller;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,15 +20,16 @@ import deso.teste.dto.AlunoDTO;
 import deso.teste.model.Aluno;
 import deso.teste.model.repository.AlunoRepository;
 
-@RequestMapping(path = "/aluno") // This means URL's start with /teste (after Application path)
+@RequestMapping(path = "/teste-api") // This means URL's start with /teste-api
 @RestController
 public class AlunoController {
 
 	@Autowired // This means to get the bean called userRepository
 	private AlunoRepository alunoRepository;
 
-	@PostMapping(path = "/add") // Map ONLY POST Requests
-	public @ResponseBody String addNewUser(@RequestParam String nome, @RequestParam String email) {
+	/* Metodo que usa strings como parametros */
+	@PostMapping("/alunoString") // Map ONLY POST Requests
+	public @ResponseBody String add(@RequestParam String nome, @RequestParam String email) {
 		// @ResponseBody means the returned String is the response, not a view name
 		// @RequestParam means it is a parameter from the GET or POST request
 
@@ -33,30 +37,60 @@ public class AlunoController {
 		a.setNome(nome);
 		a.setEmail(email);
 		alunoRepository.save(a);
-		
+
 		return "Saved";
 	}
 
-	@GetMapping("/delete/{id}")
-	public String deleteUser(@PathVariable(name = "id") Integer id) {
-
-		Optional<Aluno> aluno = alunoRepository.findById(id);
-		alunoRepository.delete(aluno.get());
-
-		return "Deleted";
+	/* Metodo que usa a dto para esconder a entidade */
+	@PostMapping("/aluno")
+	public ResponseEntity<AlunoDTO> createTutorial(@RequestBody AlunoDTO alunoDTO) {
+		try {
+			Aluno a = alunoRepository.save(new Aluno(alunoDTO.nome(), alunoDTO.email()));
+			return new ResponseEntity<>(AlunoDTO.from(a), HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
-	@PutMapping("/update/{id}")
-	public String update(@RequestBody AlunoDTO dto, @PathVariable(value = "id") Integer id) {
-
-		Aluno aluno = AlunoDTO.alunoFromDTO(dto);
-		alunoRepository.save(aluno);
-		
-		return "Updated";
+	/* Metodo que usa a entidade */
+	@PostMapping("/aluno")
+	public ResponseEntity<Aluno> createTutorial(@RequestBody Aluno aluno) {
+		try {
+			Aluno a = alunoRepository.save(new Aluno(aluno.getNome(), aluno.getEmail()));
+			return new ResponseEntity<>(a, HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
-	@GetMapping(path = "/all")
-	public @ResponseBody Iterable<Aluno> getAllAlunos() {
+	@DeleteMapping("/aluno/{id}")
+	public ResponseEntity<HttpStatus> delete(@PathVariable Integer id) {
+
+		try {
+			alunoRepository.deleteById(id);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@PutMapping("/aluno/{id}")
+	public ResponseEntity<Aluno> update(@RequestBody Aluno aluno, @PathVariable Integer id) {
+
+		Optional<Aluno> alunoData = alunoRepository.findById(id);
+		if (alunoData.isPresent()) {
+			Aluno a = alunoData.get();
+			a.setNome(aluno.getNome());
+			a.setEmail(aluno.getEmail());
+
+			return new ResponseEntity<>(alunoRepository.save(a), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+
+	@GetMapping("/aluno/all")
+	public @ResponseBody Iterable<Aluno> getAll() {
 		// This returns a JSON or XML with the users
 		return alunoRepository.findAll();
 	}
