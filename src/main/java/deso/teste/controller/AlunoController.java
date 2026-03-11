@@ -42,7 +42,7 @@ public class AlunoController {
 	}
 
 	/* Metodo que usa a dto para esconder a entidade */
-	@PostMapping("/aluno")
+	@PostMapping("/alunoDTO")
 	public ResponseEntity<AlunoDTO> createTutorial(@RequestBody AlunoDTO alunoDTO) {
 		try {
 			Aluno a = alunoRepository.save(new Aluno(alunoDTO.nome(), alunoDTO.email()));
@@ -62,18 +62,7 @@ public class AlunoController {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-
-	@DeleteMapping("/aluno/{id}")
-	public ResponseEntity<HttpStatus> delete(@PathVariable Integer id) {
-
-		try {
-			alunoRepository.deleteById(id);
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-
+	
 	@PutMapping("/aluno/{id}")
 	public ResponseEntity<Aluno> update(@RequestBody Aluno aluno, @PathVariable Integer id) {
 
@@ -88,6 +77,17 @@ public class AlunoController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
+
+	@DeleteMapping("/aluno/{id}")
+	public ResponseEntity<HttpStatus> delete(@PathVariable Integer id) {
+
+		try {
+			alunoRepository.deleteById(id);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}	
 
 	@GetMapping("/aluno/all")
 	public @ResponseBody Iterable<Aluno> getAll() {
