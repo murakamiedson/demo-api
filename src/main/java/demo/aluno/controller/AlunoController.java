@@ -20,7 +20,7 @@ import demo.aluno.dto.AlunoDTO;
 import demo.aluno.model.Aluno;
 import demo.aluno.model.repository.AlunoRepository;
 
-@RequestMapping(path = "/teste-api") // This means URL's start with /teste-api
+@RequestMapping(path = "/demo-api") // This means URL's start with /teste-api
 @RestController
 public class AlunoController {
 
