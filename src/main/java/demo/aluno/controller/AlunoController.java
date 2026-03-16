@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import demo.aluno.dto.AlunoDTO;
 import demo.aluno.model.Aluno;
 import demo.aluno.model.repository.AlunoRepository;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @RequestMapping(path = "/demo-api") // This means URL's start with /teste-api
 @RestController
 public class AlunoController {
@@ -91,6 +93,8 @@ public class AlunoController {
 
 	@GetMapping("/aluno/all")
 	public @ResponseBody Iterable<Aluno> getAll() {
+		
+		log.info("buscar todos...");
 		// This returns a JSON or XML with the users
 		return alunoRepository.findAll();
 	}
