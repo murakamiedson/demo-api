@@ -20,7 +20,9 @@ import demo.aluno.dto.AlunoDTO;
 import demo.aluno.model.Aluno;
 import demo.aluno.model.AlunoRepository;
 import demo.aluno.service.AlunoService;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @RequestMapping(path = "/demo-api") // This means URL's start with /teste-api
 @RestController
 public class AlunoController {
@@ -31,23 +33,27 @@ public class AlunoController {
 	private AlunoService alunoService;
 	
 
-	/* Metodo que usa strings como parametros */
+	/* Metodo que cria objeto com os parametros da entidade */
 	@PostMapping("/alunoString") // Map ONLY POST Requests
-	public @ResponseBody String add(@RequestParam String nome, @RequestParam String email) {
+	public ResponseEntity<AlunoDTO> createString(@RequestParam String nome, @RequestParam String email) {
 		// @ResponseBody means the returned String is the response, not a view name
 		// @RequestParam means it is a parameter from the GET or POST request
 
-		Aluno a = new Aluno();
-		a.setNome(nome);
-		a.setEmail(email);
-		alunoRepository.save(a);
+		try {
+			Aluno a = new Aluno(nome, email);
+	
+			alunoRepository.save(a);
 
-		return "Saved";
+			return new ResponseEntity<>(AlunoDTO.from(a), HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
-	/* Metodo que usa a dto para esconder a entidade */
+	/* Metodo que cria objeto com dto para esconder a entidade */
 	@PostMapping("/alunoDTO")
-	public ResponseEntity<AlunoDTO> create(@RequestBody AlunoDTO alunoDTO) {
+	public ResponseEntity<AlunoDTO> createDTO(@RequestBody AlunoDTO alunoDTO) {
+
 		try {
 			Aluno a = alunoRepository.save(new Aluno(alunoDTO.nome(), alunoDTO.email()));
 			return new ResponseEntity<>(AlunoDTO.from(a), HttpStatus.CREATED);
@@ -56,7 +62,10 @@ public class AlunoController {
 		}
 	}
 
-	/* Metodo que usa a entidade */
+	/*
+	 * Metodos manipulando a própria entidade (CRUD)
+	 */
+	
 	@PostMapping("/aluno")
 	public ResponseEntity<Aluno> create(@RequestBody Aluno aluno) {
 		try {
@@ -65,6 +74,14 @@ public class AlunoController {
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+	
+	@GetMapping("/aluno/all")
+	public @ResponseBody Iterable<Aluno> retrieve() {
+		
+		log.info("buscar todos...");
+		// This returns a JSON or XML with the users
+		return alunoRepository.findAll();
 	}
 	
 	@PutMapping("/aluno/{id}")
