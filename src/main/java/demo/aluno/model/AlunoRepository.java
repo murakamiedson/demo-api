@@ -1,9 +1,7 @@
-package demo.aluno.model.repository;
+package demo.aluno.model;
 
 
 import org.springframework.data.repository.CrudRepository;
-
-import demo.aluno.model.Aluno;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called alunoRepository
 // CRUD refers Create, Read, Update, Delete

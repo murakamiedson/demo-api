@@ -18,7 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import demo.aluno.dto.AlunoDTO;
 import demo.aluno.model.Aluno;
-import demo.aluno.model.repository.AlunoRepository;
+import demo.aluno.model.AlunoRepository;
+import demo.aluno.service.AlunoService;
 
 @RequestMapping(path = "/demo-api") // This means URL's start with /teste-api
 @RestController
@@ -26,6 +27,9 @@ public class AlunoController {
 
 	@Autowired // This means to get the bean called userRepository
 	private AlunoRepository alunoRepository;
+	@Autowired
+	private AlunoService alunoService;
+	
 
 	/* Metodo que usa strings como parametros */
 	@PostMapping("/alunoString") // Map ONLY POST Requests
@@ -43,7 +47,7 @@ public class AlunoController {
 
 	/* Metodo que usa a dto para esconder a entidade */
 	@PostMapping("/alunoDTO")
-	public ResponseEntity<AlunoDTO> createTutorial(@RequestBody AlunoDTO alunoDTO) {
+	public ResponseEntity<AlunoDTO> create(@RequestBody AlunoDTO alunoDTO) {
 		try {
 			Aluno a = alunoRepository.save(new Aluno(alunoDTO.nome(), alunoDTO.email()));
 			return new ResponseEntity<>(AlunoDTO.from(a), HttpStatus.CREATED);
@@ -54,7 +58,7 @@ public class AlunoController {
 
 	/* Metodo que usa a entidade */
 	@PostMapping("/aluno")
-	public ResponseEntity<Aluno> createTutorial(@RequestBody Aluno aluno) {
+	public ResponseEntity<Aluno> create(@RequestBody Aluno aluno) {
 		try {
 			Aluno a = alunoRepository.save(new Aluno(aluno.getNome(), aluno.getEmail()));
 			return new ResponseEntity<>(a, HttpStatus.CREATED);
@@ -92,7 +96,7 @@ public class AlunoController {
 	@GetMapping("/aluno/all")
 	public @ResponseBody Iterable<Aluno> getAll() {
 		// This returns a JSON or XML with the users
-		return alunoRepository.findAll();
+		return alunoService.getAll();
 	}
 
 }
