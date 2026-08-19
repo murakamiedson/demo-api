@@ -5,17 +5,23 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Data;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@Entity // This tells Hibernate to make a table out of this class
+@Getter
+@Setter
+@Entity
 public class Aluno {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private @Nullable Integer id;
 
+	@NotBlank(message = "O nome do produto é obrigatório!")
 	private String nome;
+	@NotBlank @Email
 	private String email;
 	
 	public Aluno() {}
