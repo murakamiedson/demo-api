@@ -18,10 +18,20 @@ public class Aluno {
 	private String nome;
 	private String email;
 	
+	public Aluno() {}
+	
 	public Aluno(String nome, String email) {
+		super();
 		this.nome = nome;
 		this.email = email;
 	}
 
-	public Aluno() {}
+	public Aluno(Integer id, String nome, String email) {
+		super();
+		this.id = id;
+		this.nome = nome;
+		this.email = email;
+	}
+	
+	
 }

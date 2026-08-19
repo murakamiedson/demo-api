@@ -27,93 +27,77 @@ import lombok.extern.log4j.Log4j2;
 @RestController
 public class AlunoController {
 
-	@Autowired // This means to get the bean called userRepository
-	private AlunoRepository alunoRepository;
 	@Autowired
 	private AlunoService alunoService;
 	
-
-	/* Metodo que cria objeto com os parametros da entidade */
-	@PostMapping("/alunoString") // Map ONLY POST Requests
-	public ResponseEntity<AlunoDTO> createString(@RequestParam String nome, @RequestParam String email) {
-		// @ResponseBody means the returned String is the response, not a view name
-		// @RequestParam means it is a parameter from the GET or POST request
-
+	@Autowired
+	private AlunoRepository alunoRepository;
+	
+	
+	@PostMapping(path = "/alunos/param")
+	public ResponseEntity<String> createString(@RequestParam String nome, @RequestParam String email) {
+		
 		try {
 			Aluno a = new Aluno(nome, email);
 	
-			alunoRepository.save(a);
+			alunoService.save(a);
 
+			return new ResponseEntity<>("Aluno criado com sucesso!", HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+
+	@PostMapping(path = "/alunos")
+	public ResponseEntity<AlunoDTO> create(@RequestBody AlunoDTO alunoDTO) {
+
+		try {
+			Aluno a = alunoService.save(new Aluno(alunoDTO.nome(), alunoDTO.email()));
+			
 			return new ResponseEntity<>(AlunoDTO.from(a), HttpStatus.CREATED);
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-
-	/* Metodo que cria objeto com dto para esconder a entidade */
-	@PostMapping("/alunoDTO")
-	public ResponseEntity<AlunoDTO> createDTO(@RequestBody AlunoDTO alunoDTO) {
-
-		try {
-			Aluno a = alunoRepository.save(new Aluno(alunoDTO.nome(), alunoDTO.email()));
-			return new ResponseEntity<>(AlunoDTO.from(a), HttpStatus.CREATED);
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-
-	/*
-	 * Metodos manipulando a própria entidade (CRUD)
-	 */
-	
-	@PostMapping("/aluno")
-	public ResponseEntity<Aluno> create(@RequestBody Aluno aluno) {
-		try {
-			Aluno a = alunoRepository.save(new Aluno(aluno.getNome(), aluno.getEmail()));
-			return new ResponseEntity<>(a, HttpStatus.CREATED);
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-	
-	@GetMapping("/aluno/all")
-	public @ResponseBody Iterable<Aluno> retrieve() {
-		
-		log.info("buscar todos...");
-		// This returns a JSON or XML with the users
-		return alunoRepository.findAll();
-	}
-	
-	@PutMapping("/aluno/{id}")
-	public ResponseEntity<Aluno> update(@RequestBody Aluno aluno, @PathVariable Integer id) {
-
-		Optional<Aluno> alunoData = alunoRepository.findById(id);
-		if (alunoData.isPresent()) {
-			Aluno a = alunoData.get();
-			a.setNome(aluno.getNome());
-			a.setEmail(aluno.getEmail());
-
-			return new ResponseEntity<>(alunoRepository.save(a), HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-	}
-
-	@DeleteMapping("/aluno/{id}")
-	public ResponseEntity<HttpStatus> delete(@PathVariable Integer id) {
-
-		try {
-			alunoRepository.deleteById(id);
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}	
+	
 
-	@GetMapping("/aluno/all")
+	@PutMapping("/alunos/{id}")
+	public ResponseEntity<String> update(@RequestBody AlunoDTO alunoDTO, @PathVariable Integer id) {
+
+		Optional<Aluno> alunoData = alunoService.findById(id);
+		
+		if (alunoData.isPresent()) {
+			Aluno a = alunoData.get();
+			a.setNome(alunoDTO.nome());
+			a.setEmail(alunoDTO.email());
+			
+			alunoService.save(a);
+
+			return new ResponseEntity<>("Aluno alterado com sucesso!", HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>("Não foi possível encontrar o Aluno.", HttpStatus.NOT_FOUND);
+		}
+	}
+	
+
+	@DeleteMapping("/alunos/{id}")
+	public ResponseEntity<String> delete(@PathVariable Integer id) {
+
+		try {
+			alunoService.deleteById(id);				
+						
+			return new ResponseEntity<>("Aluno excluído com sucesso!", HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>("Não foi possível excluir o Aluno.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+
+	@GetMapping("/alunos")
 	public @ResponseBody Iterable<Aluno> getAll() {
-		// This returns a JSON or XML with the users
-		return alunoService.getAll();
+		
+		return alunoRepository.findAll();
 	}
 
 }
