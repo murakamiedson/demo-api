@@ -1,5 +1,7 @@
 package demo.aluno.model;
 
+import org.hibernate.validator.constraints.br.CPF;
+
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +21,7 @@ public class Aluno {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private @Nullable Integer id;
 
-	@NotBlank(message = "O nome do produto é obrigatório!")
+	@NotBlank(message = "O nome do aluno é obrigatório!")
 	private String nome;
 	@NotBlank @Email
 	private String email;
