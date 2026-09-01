@@ -1,7 +1,5 @@
 package demo.aluno.model;
 
-import org.hibernate.validator.constraints.br.CPF;
-
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
