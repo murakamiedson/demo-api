@@ -19,7 +19,7 @@ public class Aluno {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private @Nullable Integer id;
 
-	@NotBlank(message = "O nome do produto é obrigatório!")
+	@NotBlank(message = "O nome do aluno é obrigatório!")
 	private String nome;
 	@NotBlank @Email
 	private String email;
