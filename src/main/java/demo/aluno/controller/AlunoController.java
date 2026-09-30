@@ -22,6 +22,7 @@ import demo.aluno.model.AlunoRepository;
 import demo.aluno.service.AlunoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 
 @Tag(name = "demo-api", description = "API para manter alunos.")
@@ -30,90 +31,92 @@ import lombok.extern.log4j.Log4j2;
 @RestController
 public class AlunoController {
 
-	@Autowired 
+	@Autowired
 	private AlunoService alunoService;
-	
+
 	@Autowired
 	private AlunoRepository alunoRepository;
-	
+
 	@Operation(summary = "Criar aluno com parametros.", description = "Retorna uma mensagem.")
 	@PostMapping(path = "/alunos/param")
 	public ResponseEntity<String> createString(@RequestParam String nome, @RequestParam String email) {
-		
-		log.debug("createString( " + nome + ", " + email + " )");
-		
+
+		log.info("createString( " + nome + ", " + email + " )");
+
 		try {
 			Aluno a = new Aluno(nome, email);
-	
 			alunoService.save(a);
-
+			
 			return new ResponseEntity<>("Aluno criado com sucesso!", HttpStatus.CREATED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-
 	@Operation(summary = "Criar aluno com objeto.", description = "Retorna o objeto criado.")
 	@PostMapping(path = "/alunos")
-	public ResponseEntity<AlunoDTO> create(@RequestBody AlunoDTO alunoDTO) {
-		
-		log.info("create( " + alunoDTO + " )");
+	public ResponseEntity<AlunoDTO> create(@Valid @RequestBody AlunoDTO alunoDTO) {
 
+		log.info("create( " + alunoDTO + " )");
 		try {
-			Aluno a = alunoService.save(new Aluno(alunoDTO.nome(), alunoDTO.email()));
+			Aluno a = alunoService.save(new Aluno(alunoDTO.getNome(), alunoDTO.getEmail()));
 			
 			return new ResponseEntity<>(AlunoDTO.from(a), HttpStatus.CREATED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	}	
-	
+	}
 
-	@Operation(summary = "Atualizar aluno com objeto.", description = "Retorna uma mensagem.")
+	@Operation(summary = "Atualizar aluno com objeto.", description = "Retorna uma mensagem. O Id deve existir.")
 	@PutMapping("/alunos/{id}")
-	public ResponseEntity<String> update(@RequestBody AlunoDTO alunoDTO, @PathVariable Integer id) {
-		
+	public ResponseEntity<String> update(@Valid @RequestBody AlunoDTO alunoDTO, @PathVariable Integer id) {
+
 		log.info("update( " + alunoDTO + ", Id " + id + " )");
 
 		Optional<Aluno> alunoData = alunoService.findById(id);
-		
-		if (alunoData.isPresent()) {
-			Aluno a = alunoData.get();
-			a.setNome(alunoDTO.nome());
-			a.setEmail(alunoDTO.email());
-			
-			alunoService.save(a);
 
-			return new ResponseEntity<>("Aluno alterado com sucesso!", HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>("Não foi possível encontrar o Aluno.", HttpStatus.NOT_FOUND);
+		try {
+			if (alunoData.isPresent()) {
+				Aluno a = new Aluno(alunoDTO.getNome(), alunoDTO.getEmail());
+				alunoService.save(a);
+				
+				return ResponseEntity.ok("Aluno alterado com sucesso!"); 
+			} else {
+				return new ResponseEntity<>("Aluno não cadastrado!", HttpStatus.NOT_FOUND);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>("Ocorreu um erro inexperado!", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
 
-	@Operation(summary = "Exclui um aluno por Id.", description = "Retorna uma mensagem.")
+	@Operation(summary = "Exclui um aluno por Id.", description = "Retorna uma mensagem. O Id deve existir.")
 	@DeleteMapping("/alunos/{id}")
 	public ResponseEntity<String> delete(@PathVariable Integer id) {
-		
+
 		log.info("delete( Id " + id + " )");
 
 		try {
-			alunoService.deleteById(id);				
-						
-			return new ResponseEntity<>("Aluno excluído com sucesso!", HttpStatus.OK);
+
+			Optional<Aluno> alunoData = alunoService.findById(id);
+
+			if (alunoData.isPresent()) {
+				alunoService.deleteById(id);
+			} else {
+				return new ResponseEntity<>("Aluno não cadastrado!", HttpStatus.NOT_FOUND);
+			}
+			return ResponseEntity.ok("Aluno excluído com sucesso!");
+
 		} catch (Exception e) {
-			return new ResponseEntity<>("Não foi possível excluir o Aluno.", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>("Ocorreu um erro inexperado!", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
 
 	@Operation(summary = "Recuperar alunos.", description = "Retorna uma coleção de alunos.")
 	@GetMapping("/alunos")
 	public @ResponseBody Iterable<Aluno> getAll() {
-		
+
 		log.info("getAll()");
-		
+
 		return alunoRepository.findAll();
 	}
 

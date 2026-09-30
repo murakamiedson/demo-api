@@ -5,8 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,10 +17,8 @@ public class Aluno {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private @Nullable Integer id;
 
-	@NotBlank(message = "O nome do aluno é obrigatório!")
-	private String nome;
-	@NotBlank @Email
-	private String email;
+	private String nome;	
+    private String email;
 	
 	public Aluno() {}
 	
