@@ -42,6 +42,7 @@ public class AlunoController {
 	public ResponseEntity<String> createString(@RequestParam String nome, @RequestParam String email) {
 
 		log.info("createString( " + nome + ", " + email + " )");
+
 		try {
 			Aluno a = new Aluno(nome, email);
 			alunoService.save(a);

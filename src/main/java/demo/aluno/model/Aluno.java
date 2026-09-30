@@ -16,6 +16,7 @@ public class Aluno {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private @Nullable Integer id;
+
 	private String nome;	
     private String email;
 	
