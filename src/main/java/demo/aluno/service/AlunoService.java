@@ -10,11 +10,11 @@ import demo.aluno.model.AlunoRepository;
 
 @Service
 public class AlunoService {
-	
+
 	@Autowired
 	private AlunoRepository alunoRepository;
 
-	public Iterable<Aluno> getAll() {		
+	public Iterable<Aluno> getAll() {
 		return alunoRepository.findAll();
 	}
 
@@ -26,19 +26,8 @@ public class AlunoService {
 		return alunoRepository.findById(id);
 	}
 
-	public void deleteById(Integer id) throws Exception {
-		try {
-			if (alunoRepository.findById(id).isEmpty()) {
-				throw new Exception("Aluno inexistente.");
-			}
-			alunoRepository.deleteById(id);		
-		}
-		catch (Exception e) {
-			throw e;
-		}
+	public void deleteById(Integer id) {
+		alunoRepository.deleteById(id);
 	}
-	
-	
-	
 
 }
