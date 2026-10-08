@@ -49,6 +49,7 @@ public class AlunoController {
 			
 			return new ResponseEntity<>("Aluno criado com sucesso!", HttpStatus.CREATED);
 		} catch (Exception e) {
+			log.info("Exceção = " + e); 			
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
